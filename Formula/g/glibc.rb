@@ -65,66 +65,107 @@ class Glibc < Formula
   depends_on "linux-headers@5.15"
   depends_on LinuxKernelRequirement
 
-  # Automatic bootstrapping is only supported for Intel.
-  on_intel do
-    resource "bootstrap-binutils" do
-      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.0.0/bootstrap-binutils-2.38.tar.gz"
-      sha256 "a2971fd77743a1d82242736c646bfa201137a4df28d829b1aa7f556fc57215e2"
+  resource "bootstrap-binutils" do
+    on_arm do
+      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.1.0/bootstrap-aarch64-binutils-2.43.1.tar.gz"
+      sha256 "339da3d1cdb3c2ac73e36692825d27d08f6a41aaa76dca4cded86eb42f385c66"
     end
-
-    resource "bootstrap-bison" do
-      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.0.0/bootstrap-bison-3.8.2.tar.gz"
-      sha256 "f914c0dee9fc8a200f6607d52a2d25c253b665d02aaac360711ebd5fbd9cb346"
+    on_intel do
+      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.1.0/bootstrap-x86_64-binutils-2.43.1.tar.gz"
+      sha256 "5deed1e65b9121f21a6ebcd673b7d3f37e678fa77a9b087fdf97e846d38fe92d"
     end
+  end
 
-    resource "bootstrap-gawk" do
-      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.0.0/bootstrap-gawk-5.1.1.tar.gz"
-      sha256 "ec3f0115b156b418a189f9868aaa0655f18c40f5c40f437e407ac60b7c749e0a"
+  resource "bootstrap-bison" do
+    on_arm do
+      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.1.0/bootstrap-aarch64-bison-3.8.2.tar.gz"
+      sha256 "6ed4416f47dcd4aa7e58143804b0daa4296e6fbece173110fa9fd8b885a7283c"
     end
-
-    resource "bootstrap-gcc" do
-      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.0.0/bootstrap-gcc-9.5.0.tar.gz"
-      sha256 "d549cf096864de5da77b4f068fab3741636206f3b7ace593b46a226d726f4538"
+    on_intel do
+      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.1.0/bootstrap-x86_64-bison-3.8.2.tar.gz"
+      sha256 "97d82cf4b3b00cfacbf142679ae77cbb8e80490f564a4d1d4921b892994c073b"
     end
+  end
 
-    resource "bootstrap-make" do
-      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.0.0/bootstrap-make-4.3.tar.gz"
-      sha256 "aa684eff83e5a986391475547c29b3ade04a307aa5730866aa5d2caa905e7166"
+  resource "bootstrap-gawk" do
+    on_arm do
+      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.1.0/bootstrap-aarch64-gawk-5.3.1.tar.gz"
+      sha256 "f76af31c7f6a015387684ad67c61345702c647e5baa1dc32e6f384f3918641c6"
     end
-
-    resource "bootstrap-python3" do
-      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.0.0/bootstrap-python3-3.9.13.tar.gz"
-      sha256 "93d258ab9240d247a66322926deb6728e2aa7877711196fde02d716c20ada490"
+    on_intel do
+      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.1.0/bootstrap-x86_64-gawk-5.3.1.tar.gz"
+      sha256 "fbcf19d79eafb1921abd11ab6c1cb662c7e7984ba19ea4a10ac88dd27fcf645b"
     end
+  end
 
-    resource "bootstrap-sed" do
-      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.0.0/bootstrap-sed-4.8.tar.gz"
-      sha256 "404f86a92a15303f9b08960712ee8a8b398efc345d80b4e0401dd9ef82452046"
+  resource "bootstrap-gcc" do
+    on_arm do
+      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.1.0/bootstrap-aarch64-gcc-9.5.0.tar.gz"
+      sha256 "01ef7abe0acf6d793af42b1ce4b0762a5e6689e6216c2f6f2b6a8e7414a1c629"
+    end
+    on_intel do
+      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.1.0/bootstrap-x86_64-gcc-9.5.0.tar.gz"
+      sha256 "8472155b74727dc84e396866f2d224443d2ab7765f57a7c9638ccacce98dd585"
+    end
+  end
+
+  resource "bootstrap-make" do
+    on_arm do
+      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.1.0/bootstrap-aarch64-make-4.4.1.tar.gz"
+      sha256 "e2f86d1e8eb3905bd398cca52511c0e5539e9f891d15a577f864d0d368c0e792"
+    end
+    on_intel do
+      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.1.0/bootstrap-x86_64-make-4.4.1.tar.gz"
+      sha256 "d68f444c6491946a3a5fc9a0521fded4559b3936241158c54d05edcc90a50e5e"
+    end
+  end
+
+  resource "bootstrap-python3" do
+    on_arm do
+      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.1.0/bootstrap-aarch64-python3-3.11.10.tar.gz"
+      sha256 "265a86cad25b2d53184d812563750d3f32c66d09b552cfc61ce3d143309de05b"
+    end
+    on_intel do
+      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.1.0/bootstrap-x86_64-python3-3.11.10.tar.gz"
+      sha256 "0fc2735fee338f6fb25bce707d1bdc783e1b8c49814e6d7d897d992dad1d72be"
+    end
+  end
+
+  resource "bootstrap-sed" do
+    on_arm do
+      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.1.0/bootstrap-aarch64-sed-4.9.tar.gz"
+      sha256 "f4e43a0e7599c082f0cf7d2eab771d3f6f0c40b192e4622e08d943cd6175be70"
+    end
+    on_intel do
+      url "https://github.com/Homebrew/glibc-bootstrap/releases/download/1.1.0/bootstrap-x86_64-sed-4.9.tar.gz"
+      sha256 "64ff039f91e6043b5ce4cc48561a7f1ae53ad0f47aefed8239dfb5686bf1d547"
     end
   end
 
   def install
-    # Automatic bootstrapping is only supported for Intel.
-    if Hardware::CPU.intel?
-      # Set up bootstrap resources in /tmp/homebrew.
-      bootstrap_dir = Pathname.new("/tmp/homebrew")
-      bootstrap_dir.mkpath
+    # Set up bootstrap resources in /tmp/homebrew.
+    bootstrap_dir = Pathname.new("/tmp/homebrew")
+    bootstrap_dir.mkpath
 
-      resources.each do |r|
-        r.stage do
-          cp_r Pathname.pwd.children, bootstrap_dir
-        end
+    resources.each do |r|
+      r.stage do
+        cp_r Pathname.pwd.children, bootstrap_dir
       end
+    end
 
-      # Add bootstrap resources to PATH.
-      ENV.prepend_path "PATH", bootstrap_dir/"bin"
-      # Make sure we use the bootstrap GCC rather than other compilers.
-      ENV["CC"] = bootstrap_dir/"bin/gcc"
-      ENV["CXX"] = bootstrap_dir/"bin/g++"
-      # The MAKE variable must be set to the bootstrap make - including it in the path is not enough.
-      ENV["MAKE"] = bootstrap_dir/"bin/make"
-      # Add -march=core2 and -O2 when building in CI since we are not using the compiler shim.
-      ENV.append "CFLAGS", "-march=core2 -O2" if ENV["HOMEBREW_GITHUB_ACTIONS"]
+    # Add bootstrap resources to PATH.
+    ENV.prepend_path "PATH", bootstrap_dir/"bin"
+    # Make sure we use the bootstrap GCC rather than other compilers.
+    ENV["CC"] = bootstrap_dir/"bin/gcc"
+    ENV["CXX"] = bootstrap_dir/"bin/g++"
+    # The MAKE variable must be set to the bootstrap make - including it in the path is not enough.
+    ENV["MAKE"] = bootstrap_dir/"bin/make"
+    # Add -march and -O2 when building in CI since we are not using the compiler shim.
+    if ENV["HOMEBREW_GITHUB_ACTIONS"]
+      ENV.append "CFLAGS", case Hardware::CPU.arch
+      when :x86_64 then "-march=core2 -O2"
+      when :arm64 then "-march=armv8-a -O2"
+      end
     end
 
     # Setting RPATH breaks glibc.
