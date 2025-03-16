@@ -4,7 +4,7 @@ class Pypy310 < Formula
   url "https://downloads.python.org/pypy/pypy3.10-v7.3.17-src.tar.bz2"
   sha256 "6ad74bc578e9c6d3a8a1c51503313058e3c58c35df86f7485453c4be6ab24bf7"
   license "MIT"
-  revision 1
+  revision 2
   head "https://github.com/pypy/pypy.git", branch: "main"
 
   livecheck do
@@ -36,6 +36,14 @@ class Pypy310 < Formula
   uses_from_macos "unzip"
   uses_from_macos "zlib"
 
+  def abi_version
+    stable.url[/pypy(\d+\.\d+)/, 1]
+  end
+
+  def newest_abi_version?
+    self == Formula["pypy3"]
+  end
+
   # setuptools >= 60 required sysconfig patch
   # See https://github.com/Homebrew/homebrew-core/pull/99892#issuecomment-1108492321
   resource "setuptools" do
@@ -45,8 +53,8 @@ class Pypy310 < Formula
 
   # always pull the latest pip, https://pypi.org/project/pip/#files
   resource "pip" do
-    url "https://files.pythonhosted.org/packages/b7/06/6b1ad0ae8f97d7a0d6f6ad640db10780578999e647a9593512ceb6f06469/pip-23.3.2.tar.gz"
-    sha256 "7fd9972f96db22c8077a1ee2691b172c8089b17a5652a44494a9ecb0d78f9149"
+    url "https://files.pythonhosted.org/packages/70/53/b309b4a497b09655cb7e07088966881a57d082f48ac3cb54ea729fd2c6cf/pip-25.0.1.tar.gz"
+    sha256 "88f96547ea48b940a3a385494e181e29fb8637898f88d88737c5049780f196ea"
   end
 
   # Build fixes:
@@ -54,14 +62,6 @@ class Pypy310 < Formula
   #   When tcl-tk is not found, it uses unversioned `-ltcl -ltk`, which breaks build.
   # Upstream issue ref: https://github.com/pypy/pypy/issues/3538
   patch :DATA
-
-  def abi_version
-    stable.url[/pypy(\d+\.\d+)/, 1]
-  end
-
-  def newest_abi_version?
-    self == Formula["pypy3"]
-  end
 
   def install
     # The `tcl-tk` library paths are hardcoded and need to be modified for non-/usr/local prefix
