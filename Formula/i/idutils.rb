@@ -38,9 +38,11 @@ class Idutils < Formula
   patch :DATA
 
   def install
-    system "./configure", "--disable-dependency-tracking",
-                          "--prefix=#{prefix}",
-                          "--with-lispdir=#{elisp}"
+    args = []
+    # Help old config scripts identify arm64 linux
+    args << "--build=aarch64-unknown-linux-gnu" if OS.linux? && Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
+
+    system "./configure", "--with-lispdir=#{elisp}", *args, *std_configure_args
     system "make", "install"
   end
 
@@ -57,6 +59,89 @@ class Idutils < Formula
 end
 
 __END__
+diff --git a/lib/fflush.c b/lib/fflush.c
+index 8879cab..34c6b10 100644
+--- a/lib/fflush.c
++++ b/lib/fflush.c
+@@ -31,7 +31,7 @@
+ #undef fflush
+ 
+ 
+-#if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
++##if defined _IO_ftrylockfile || defined __GLIBC__  /* GNU libc, BeOS, Haiku, Linux libc5 */
+ 
+ /* Clear the stream's ungetc buffer, preserving the value of ftello (fp).  */
+ static inline void
+@@ -138,7 +138,7 @@ rpl_fflush (FILE *stream)
+   if (stream == NULL || ! freading (stream))
+     return fflush (stream);
+ 
+-#if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
++##if defined _IO_ftrylockfile || defined __GLIBC__  /* GNU libc, BeOS, Haiku, Linux libc5 */
+ 
+   clear_ungetc_buffer_preserving_position (stream);
+ 
+diff --git a/lib/fpurge.c b/lib/fpurge.c
+index 295d8dc..cc11571 100644
+--- a/lib/fpurge.c
++++ b/lib/fpurge.c
+@@ -61,7 +61,7 @@ fpurge (FILE *fp)
+   /* Most systems provide FILE as a struct and the necessary bitmask in
+      <stdio.h>, because they need it for implementing getc() and putc() as
+      fast macros.  */
+-# if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
++# #if defined _IO_ftrylockfile || defined __GLIBC__  /* GNU libc, BeOS, Haiku, Linux libc5 */
+   fp->_IO_read_end = fp->_IO_read_ptr;
+   fp->_IO_write_ptr = fp->_IO_write_base;
+   /* Avoid memory leak when there is an active ungetc buffer.  */
+diff --git a/lib/freading.c b/lib/freading.c
+index 3fde6ea..9287506 100644
+--- a/lib/freading.c
++++ b/lib/freading.c
+@@ -31,7 +31,7 @@ freading (FILE *fp)
+   /* Most systems provide FILE as a struct and the necessary bitmask in
+      <stdio.h>, because they need it for implementing getc() and putc() as
+      fast macros.  */
+-# if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
++# #if defined _IO_ftrylockfile || defined __GLIBC__  /* GNU libc, BeOS, Haiku, Linux libc5 */
+   return ((fp->_flags & _IO_NO_WRITES) != 0
+           || ((fp->_flags & (_IO_NO_READS | _IO_CURRENTLY_PUTTING)) == 0
+               && fp->_IO_read_base != NULL));
+diff --git a/lib/fseeko.c b/lib/fseeko.c
+index eae1b72..78b0325 100644
+--- a/lib/fseeko.c
++++ b/lib/fseeko.c
+@@ -40,7 +40,7 @@ fseeko (FILE *fp, off_t offset, int whence)
+ #endif
+ 
+   /* These tests are based on fpurge.c.  */
+-#if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
++##if defined _IO_ftrylockfile || defined __GLIBC__  /* GNU libc, BeOS, Haiku, Linux libc5 */
+   if (fp->_IO_read_end == fp->_IO_read_ptr
+       && fp->_IO_write_ptr == fp->_IO_write_base
+       && fp->_IO_save_base == NULL)
+@@ -105,7 +105,7 @@ fseeko (FILE *fp, off_t offset, int whence)
+           return -1;
+         }
+ 
+-#if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
++##if defined _IO_ftrylockfile || defined __GLIBC__  /* GNU libc, BeOS, Haiku, Linux libc5 */
+       fp->_flags &= ~_IO_EOF_SEEN;
+       fp->_offset = pos;
+ #elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, MacOS X, Cygwin */
+diff --git a/lib/fseterr.c b/lib/fseterr.c
+index 30b41e1..dbf20e3 100644
+--- a/lib/fseterr.c
++++ b/lib/fseterr.c
+@@ -29,7 +29,7 @@ fseterr (FILE *fp)
+   /* Most systems provide FILE as a struct and the necessary bitmask in
+      <stdio.h>, because they need it for implementing getc() and putc() as
+      fast macros.  */
+-#if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
++#if defined _IO_ftrylockfile || defined __GLIBC__ /* GNU libc, BeOS, Haiku, Linux libc5 */
+   fp->_flags |= _IO_ERR_SEEN;
+ #elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, MacOS X, Cygwin */
+   fp_->_flags |= __SERR;
 diff --git a/lib/stdio.in.h b/lib/stdio.in.h
 index 0481930..79720e0 100644
 --- a/lib/stdio.in.h
@@ -67,3 +152,5 @@ index 0481930..79720e0 100644
     always declared, since it is required by C89.  */
 -_GL_WARN_ON_USE (gets, "gets is a security hole - use fgets instead");
  #endif
+ 
+ 
