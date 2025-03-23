@@ -41,10 +41,11 @@ class Libdsk < Formula
     inreplace "Makefile.in", "SUBDIRS = . include lib tools man doc",
                              "SUBDIRS = . include lib tools man"
 
-    system "./configure", "--disable-dependency-tracking",
-                          "--prefix=#{prefix}"
-    system "make"
-    system "make", "check"
+    args = []
+    # Help old config scripts identify arm64 linux
+    args << "--build=aarch64-unknown-linux-gnu" if OS.linux? && Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
+
+    system "./configure", *args, *std_configure_args
     system "make", "install"
     doc.install Dir["doc/*.{html,pdf,sample,txt}"]
   end
