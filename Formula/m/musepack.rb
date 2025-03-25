@@ -37,6 +37,12 @@ class Musepack < Formula
   depends_on "libreplaygain"
 
   def install
+    # Work around failure from GCC 10+ using default of `-fno-common`
+    # multiple definition of `__Dc'; CMakeFiles/mpcdec.dir/mpc_decoder.o:(.rodata+0x448): first defined here
+    # multiple definition of `__Cc'; CMakeFiles/mpcdec.dir/mpc_decoder.o:(.rodata+0x470): first defined here
+    # multiple definition of `Res_bit'; CMakeFiles/mpcdec.dir/mpc_decoder.o:(.rodata+0x4c0): first defined here
+    ENV.append_to_cflags "-fcommon" if OS.linux?
+
     system "cmake", "-S", ".", "-B", "build", *std_cmake_args
     system "cmake", "--build", "build"
     system "cmake", "--install", "build"
