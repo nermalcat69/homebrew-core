@@ -36,16 +36,22 @@ class Aalib < Formula
     sha256 "9843e109d580e7112291871248140b8657108faac6d90ce5caf66cd25e8d0d1e"
   end
 
+  depends_on "autoconf" => :build
+  depends_on "automake" => :build
+  depends_on "libtool" => :build
+
   def install
     # Workaround for newer Clang
     ENV.append_to_cflags "-Wno-implicit-int" if DevelopmentTools.clang_build_version >= 1403
+
+    system "autoreconf", "--force", "--install", "--verbose"
 
     system "./configure", "--mandir=#{man}",
                           "--infodir=#{info}",
                           "--enable-shared=yes",
                           "--enable-static=yes",
                           "--without-x",
-                          *std_configure_args
+                          *args, *std_configure_args
     system "make", "install"
   end
 
