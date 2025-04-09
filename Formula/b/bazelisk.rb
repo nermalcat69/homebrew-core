@@ -1,8 +1,8 @@
 class Bazelisk < Formula
   desc "User-friendly launcher for Bazel"
   homepage "https://github.com/bazelbuild/bazelisk/"
-  url "https://github.com/bazelbuild/bazelisk/archive/refs/tags/v1.25.0.tar.gz"
-  sha256 "8ff4c6b9ab6a00fbef351d52fde39afc2b9f047865f219a89ed0b23ad6f8cf06"
+  url "https://github.com/bazelbuild/bazelisk/archive/refs/tags/v1.26.0.tar.gz"
+  sha256 "d55ea90acb6da4cacdfad0eeecf55e58da9d3fd4b88d58502ddd34e48bb28f70"
   license "Apache-2.0"
   head "https://github.com/bazelbuild/bazelisk.git", branch: "master"
 
@@ -25,6 +25,8 @@ class Bazelisk < Formula
   end
 
   def install
+    # Fix required by `go mod tidy`
+    inreplace "go.mod", "go 1.22", "go 1.23.0"
     system "go", "build", *std_go_args(ldflags: "-s -w -X github.com/bazelbuild/bazelisk/core.BazeliskVersion=#{version}")
 
     bin.install_symlink "bazelisk" => "bazel"
