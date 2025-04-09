@@ -23,9 +23,14 @@ class Ccrypt < Formula
     sha256 x86_64_linux:   "3e2c5e49110742fb547d82b661695d2044a2404869e7224c1de1be036dd253de"
   end
 
+  uses_from_macos "libxcrypt"
+
   conflicts_with "ccat", because: "both install `ccat` binaries"
 
   def install
+    # Work around segmentation fault in crypt3-check
+    ENV.O0 if OS.linux?
+
     system "./configure", "--disable-dependency-tracking",
                           "--prefix=#{prefix}",
                           "--mandir=#{man}",
